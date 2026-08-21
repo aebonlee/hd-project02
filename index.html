@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>반복 업무 자동화 4종 — hd-project02</title>
+<style>
+  :root { --ink:#0b0b0b; --ink2:#52514e; --accent:#2a78d6; --border:rgba(11,11,11,.1); }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#f9f9f7; color:var(--ink);
+         font-family:"Pretendard","Malgun Gothic",system-ui,sans-serif; line-height:1.6; }
+  main { max-width:760px; margin:0 auto; padding:48px 24px; }
+  h1 { font-size:24px; margin:0 0 6px; }
+  .sub { color:var(--ink2); margin-bottom:28px; }
+  .card { background:#fcfcfb; border:1px solid var(--border); border-radius:12px;
+          padding:20px 22px; margin-bottom:14px; }
+  .card h2 { font-size:16px; margin:0 0 6px; }
+  .card p { margin:0 0 10px; color:var(--ink2); font-size:14px; }
+  a.btn { display:inline-block; background:var(--accent); color:#fff; text-decoration:none;
+          padding:8px 16px; border-radius:8px; font-weight:600; font-size:14px; }
+  code { background:#efeeea; border-radius:4px; padding:1px 6px; font-size:13px; }
+  .tag { display:inline-block; font-size:11px; font-weight:700; border-radius:6px; padding:1px 8px;
+         background:#e8f0fb; color:#1c5cab; margin-left:8px; vertical-align:2px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>반복 업무 자동화 4종</h1>
+  <p class="sub">생성형 AI 업무자동화 전문가과정 — 기획: 권도연. 과제별 상세는 저장소 README 참조.</p>
+
+  <div class="card">
+    <h2>과제 D. 협력업체 결품(D+4) 응답 웹페이지 <span class="tag">웹 데모</span></h2>
+    <p>담당자 모드(엑셀 업로드·응답 모니터링·마감 알림)와 업체 모드(특이사항 있음/없음 응답)를 브라우저에서 바로 체험할 수 있습니다.</p>
+    <a class="btn" href="taskD_shortage_web/index.html">웹 데모 열기 →</a>
+  </div>
+
+  <div class="card">
+    <h2>과제 A. 업체별 PDF 데이터 추출 → 엑셀 <span class="tag">Python</span></h2>
+    <p>레이아웃이 다른 업체별 PDF에서 5개 항목(품번·무게·수량·금액·인코텀즈)을 추출합니다. 실행: <code>python3 taskA_pdf_extract/extract.py</code></p>
+  </div>
+
+  <div class="card">
+    <h2>과제 B. MES 라인별 진행현황 메일 <span class="tag">Python</span></h2>
+    <p>당일 07시 기준 계획 대비 차이를 계산해 앞당김(빨강)/지연(검정) 표기 메일 초안(.eml)을 생성합니다. 실행: <code>python3 taskB_mes_mail/mes_mail.py</code></p>
+  </div>
+
+  <div class="card">
+    <h2>과제 C. SAP 엑셀 가공 → 캡처·첨부 메일 <span class="tag">Python</span></h2>
+    <p>엑셀 지정 범위를 서식 그대로 메일 본문에 삽입하고 파일을 첨부한 초안(.eml)을 생성합니다. 실행: <code>python3 taskC_sap_excel_mail/sap_mail.py</code></p>
+  </div>
+</main>
+</body>
+</html>
