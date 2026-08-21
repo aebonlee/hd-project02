@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>협력업체 결품(D+4) 응답 시스템</title>
+<link rel="stylesheet" href="css/style.css">
+<!-- 엑셀 파싱: SheetJS (CDN). 오프라인 데모 시 "샘플 데이터 불러오기" 버튼은 CDN 없이도 동작 -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<header class="app-header">
+  <div>
+    <h1>협력업체 결품(D+4) 응답 시스템</h1>
+    <div class="subtitle">확정구간 결품 현황 공유 · 특이사항 유/무 응답 · 10시 마감 모니터링</div>
+  </div>
+  <div style="display:flex; align-items:center; gap:12px;">
+    <span class="badge-date" id="dataDateBadge" hidden></span>
+    <nav class="mode-switch" aria-label="모드 전환">
+      <button id="btnManagerMode" class="active" type="button">담당자 모드</button>
+      <button id="btnVendorMode" type="button">업체 모드</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ===================== 담당자 모드 ===================== -->
+  <section id="managerView">
+
+    <div class="card">
+      <h2><span class="step">1</span>결품 현황 등록</h2>
+      <div class="upload-zone" id="uploadZone">
+        <div><strong>결품현황 엑셀(.xlsx)</strong>을 여기에 끌어다 놓거나 클릭하여 선택하세요.</div>
+        <div class="hint">필수 컬럼: 일자 · 업체코드 · 업체명 · 담당자명 · 담당자 연락처 · 품번 · 품명 · 필요수량 · 확보수량 · 결품수량 · 확정구간 · 라인</div>
+      </div>
+      <input type="file" id="fileInput" accept=".xlsx,.xls">
+      <div class="toolbar" style="margin-top:12px;">
+        <button class="btn btn-primary" id="btnLoadSample" type="button">샘플 데이터 불러오기</button>
+        <button class="btn" id="btnClearAll" type="button">데이터 초기화</button>
+        <span class="hint" id="uploadStatus"></span>
+      </div>
+    </div>
+
+    <div id="managerEmpty" class="card">
+      <div class="empty-state">
+        <div class="big">&#128203;</div>
+        <div>아직 등록된 결품 현황이 없습니다.<br>엑셀을 업로드하거나 <b>샘플 데이터 불러오기</b>를 눌러 시작하세요.</div>
+      </div>
+    </div>
+
+    <div id="managerDash" hidden>
+      <div class="summary-grid" id="summaryGrid"></div>
+
+      <div class="card">
+        <h2><span class="step">2</span>업체별 응답 현황</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>업체코드</th><th>업체명</th><th>담당자</th><th>연락처</th>
+                <th>응답 상태</th><th>응답/전체</th><th>이슈 건수</th>
+              </tr>
+            </thead>
+            <tbody id="vendorStatusBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="step">3</span>이슈 부품 목록 <span class="hint">(특이사항 '있음' 응답 — 생산계획 변경 검토용)</span></h2>
+        <div class="toolbar" style="margin-bottom:10px;">
+          <button class="btn" id="btnExportCsv" type="button">CSV 내보내기</button>
+          <button class="btn" id="btnExportXlsx" type="button">엑셀(.xlsx) 내보내기</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>업체</th><th>품번</th><th>품명</th><th>결품수량</th><th>확정구간</th>
+                <th>라인</th><th>사유</th><th>예상 입고일</th><th>응답시각</th>
+              </tr>
+            </thead>
+            <tbody id="issueBody"></tbody>
+          </table>
+        </div>
+        <p class="hint" id="issueEmptyHint" hidden>아직 '특이사항 있음' 응답이 없습니다.</p>
+      </div>
+
+      <div class="card">
+        <h2><span class="step">4</span>10시 마감 알림 (카카오톡 어댑터 &rarr; 로그 대체)</h2>
+        <div class="toolbar" style="margin-bottom:10px;">
+          <button class="btn btn-danger" id="btnDeadline" type="button">10시 마감 시뮬레이션 (미응답 업체 알림)</button>
+          <button class="btn btn-ghost btn-sm" id="btnClearLog" type="button">로그 지우기</button>
+        </div>
+        <div class="log-box" id="notifyLog"></div>
+        <p class="hint">실서비스에서는 이 로그 지점이 카카오 알림톡(비즈메시지) API 호출로 교체됩니다. (README의 어댑터 표 참조)</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 업체 모드 ===================== -->
+  <section id="vendorView" hidden>
+
+    <div class="card login-box" id="vendorLoginBox">
+      <h2>업체 로그인</h2>
+      <div class="form-row">
+        <label for="vendorSelect">업체코드</label>
+        <select id="vendorSelect"></select>
+      </div>
+      <div class="form-row">
+        <label for="vendorPw">비밀번호 <span class="hint" style="display:inline">(데모: 업체코드 뒤 3자리+00, 예 V001 &rarr; 00100)</span></label>
+        <input type="password" id="vendorPw" placeholder="비밀번호 입력" autocomplete="off">
+      </div>
+      <button class="btn btn-primary" id="btnVendorLogin" type="button" style="width:100%; justify-content:center;">로그인</button>
+      <p class="hint">실서비스에서는 서버측 인증(업체 계정 또는 일회용 링크 토큰)으로 교체됩니다.</p>
+    </div>
+
+    <div id="vendorPortal" hidden>
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h2 style="margin-bottom:2px;" id="vendorTitle"></h2>
+            <span class="hint" id="vendorSubtitle"></span>
+          </div>
+          <button class="btn btn-sm" id="btnVendorLogout" type="button">로그아웃</button>
+        </div>
+      </div>
+      <div id="vendorParts"></div>
+    </div>
+
+    <div class="card" id="vendorNoData" hidden>
+      <div class="empty-state">
+        <div class="big">&#8987;</div>
+        <div>오늘 등록된 결품 현황이 없습니다. 담당자가 현황을 등록하면 표시됩니다.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="toast" role="status"></div>
+
+<footer>결품(D+4) 응답 데모 &middot; 데이터는 브라우저 localStorage에만 저장됩니다.</footer>
+
+<script src="js/logic.js"></script>
+<script src="js/sample_data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
