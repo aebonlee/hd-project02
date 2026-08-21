@@ -1,5 +1,7 @@
 # 반복 업무 자동화 및 기존 업무 개선
 
+> 🌐 **배포 페이지: [https://aebonlee.github.io/hd-project02/](https://aebonlee.github.io/hd-project02/)** · 저장소: https://github.com/aebonlee/hd-project02
+
 생성형 AI 업무자동화 전문가과정 [1차수] 프로젝트 — 기획자: 권도연
 
 "SAP/MES 자료 다운 → 엑셀 가공 → Outlook 메일 송부"로 반복되는 일일 업무를 자동화하고,
