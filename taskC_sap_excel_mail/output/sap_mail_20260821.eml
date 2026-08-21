@@ -3,21 +3,21 @@ Subject: =?utf-8?b?W+yekOyerF0g7J287J28IOyekOyerCDsiJjquIkg7ZiE7ZmpIOqztQ==?=
 From: material_report@example.com
 To: team_member1@example.com, team_member2@example.com
 Cc: team_leader@example.com
-Date: Fri, 21 Aug 2026 09:58:32 +0000
+Date: Fri, 21 Aug 2026 10:00:33 +0000
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============6637449625245319251=="
+Content-Type: multipart/mixed; boundary="===============7342377615706424115=="
 
---===============6637449625245319251==
+--===============7342377615706424115==
 Content-Type: multipart/alternative;
- boundary="===============2050575058689977721=="
+ boundary="===============5906884213967111928=="
 
---===============2050575058689977721==
+--===============5906884213967111928==
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
 HTML 지원 메일 클라이언트에서 확인해 주세요.
 
---===============2050575058689977721==
+--===============5906884213967111928==
 Content-Type: text/html; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
@@ -179,9 +179,9 @@ ly:'Malgun Gothic',sans-serif;text-align:center">-</td></tr></table>
 </body>
 </html>
 
---===============2050575058689977721==--
+--===============5906884213967111928==--
 
---===============6637449625245319251==
+--===============7342377615706424115==
 Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment;
@@ -292,4 +292,4 @@ d29ya2Jvb2sueG1sUEsBAhQDFAAAAAgAT08VXTPr47qtAAAA+wEAABoAAAAAAAAAAAAAAIABMRIA
 AHhsL19yZWxzL3dvcmtib29rLnhtbC5yZWxzUEsBAhQDFAAAAAgAT08VXZuGQoQbAQAA1wMAABMA
 AAAAAAAAAAAAAIABFhMAAFtDb250ZW50X1R5cGVzXS54bWxQSwUGAAAAAAkACQA+AgAAYhQAAAAA
 
---===============6637449625245319251==--
+--===============7342377615706424115==--

@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 편집기/OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Node (과제 D 테스트는 의존성 없음 — 혹시 설치 시 대비)
+node_modules/
+
+# 엑셀 임시 파일
+~$*.xlsx
+
+# 참고: 각 과제의 output/·sample_pdfs/ 산출물은 데모 확인용으로 커밋에 포함한다.
