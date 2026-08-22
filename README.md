@@ -55,12 +55,16 @@ python3 sample_data/make_sample_excel.py   # 샘플 엑셀/데이터 재생성
   (미응답/이슈 있음/이상 없음), 이슈 부품 CSV·엑셀 내보내기, **[10시 마감 시뮬레이션]**
 - 업체 모드: 업체코드 + 비밀번호(데모: 업체코드 뒤 3자리+00, `V001` → `00100`)
   → 담당 부품만 표시 → [특이사항 있음]/[없음] 응답 ('있음'은 사유·예상 입고일 필수)
+- **⚠️ 데모 전용 인증**: 비밀번호가 업체코드에서 유도되고 클라이언트에서만 검증되므로
+  보안 기능이 없습니다. 실배포 전 반드시 서버측 인증(또는 일회용 링크 토큰)으로 교체
+  (`js/logic.js` `DEMO_AUTH` 블록, 과제 D README 참조)
 
 ### 과제 A. PDF → 엑셀 추출
 
 ```bash
 python3 taskA_pdf_extract/make_samples.py   # 샘플 PDF 3종 생성
 python3 taskA_pdf_extract/extract.py        # → output/추출결과.xlsx
+python3 taskA_pdf_extract/test_extract.py   # 추출 규칙/오류 처리 테스트
 ```
 
 ### 과제 B. MES 진행현황 메일
@@ -68,6 +72,7 @@ python3 taskA_pdf_extract/extract.py        # → output/추출결과.xlsx
 ```bash
 python3 taskB_mes_mail/mes_mail.py
 # → output/mes_report_YYYYMMDD.html / .eml
+python3 taskB_mes_mail/test_mes_mail.py     # 07시 기준 판정 로직 테스트
 ```
 
 ### 과제 C. 엑셀 범위 → 팀 메일
@@ -76,6 +81,7 @@ python3 taskB_mes_mail/mes_mail.py
 python3 taskC_sap_excel_mail/make_sample.py
 python3 taskC_sap_excel_mail/sap_mail.py
 # → output/자재수급현황_YYYYMMDD.xlsx / sap_mail_YYYYMMDD.eml
+python3 taskC_sap_excel_mail/test_sap_mail.py   # 표 생성/색 변환 로직 테스트
 ```
 
 ## 회사 PC 실제 연동 시 수정 지점 (어댑터 표)
@@ -102,7 +108,7 @@ python3 taskC_sap_excel_mail/sap_mail.py
 
 | 영역 | 사용 기술 |
 |---|---|
-| 과제 D 프론트 | HTML/CSS/Vanilla JS (빌드 도구 없음), SheetJS(CDN) 엑셀 파싱, localStorage |
+| 과제 D 프론트 | HTML/CSS/Vanilla JS (빌드 도구 없음), SheetJS(로컬 동봉 `lib/xlsx.full.min.js`) 엑셀 파싱, localStorage |
 | 과제 D 테스트 | Node.js 내장 `assert` (순수 로직 분리 테스트) |
 | 과제 A | Python, pdfplumber(텍스트/표 추출), 정규식, openpyxl, reportlab(샘플 생성) |
 | 과제 B | Python 표준 라이브러리(csv, datetime, email) — HTML 메일 + .eml |

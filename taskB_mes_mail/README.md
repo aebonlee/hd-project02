@@ -13,7 +13,13 @@ HTML 메일을 지정 수신인/참조인에게 매일 1회(07:00~07:30) 발송�
 python3 taskB_mes_mail/mes_mail.py
 # → output/mes_report_YYYYMMDD.html (본문 미리보기)
 # → output/mes_report_YYYYMMDD.eml  (메일 초안 — 더블클릭 시 메일 앱으로 열림)
+python3 taskB_mes_mail/test_mes_mail.py    # 07시 기준 판정 로직 테스트
 ```
+
+> **Mock 안내**: 이 스크립트는 **실제 메일을 발송하지 않으며**,
+> `mes_mail.py` 상단의 수신인/참조인(`MAIL_TO`/`MAIL_CC`/`MAIL_FROM`)은
+> `@example.com` 자리표시자입니다. 회사 PC에서는 실제 주소로 바꾸고
+> 아래 "회사 PC 실제 연동 방법"의 Outlook COM 발송으로 교체하세요.
 
 ## 계산 로직 (당일 07:00 기준)
 

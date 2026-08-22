@@ -20,6 +20,15 @@ python3 taskC_sap_excel_mail/sap_mail.py
 
 캡처 범위는 `sap_mail.py` 상단의 `CAPTURE_SHEET` / `CAPTURE_RANGE` 상수로 지정한다.
 
+```bash
+python3 taskC_sap_excel_mail/test_sap_mail.py   # 표 생성/색 변환 로직 테스트
+```
+
+> **Mock 안내**: 이 스크립트는 **실제 메일을 발송하지 않으며**,
+> `sap_mail.py` 상단의 수신인/참조인(`MAIL_TO`/`MAIL_CC`/`MAIL_FROM`)은
+> `@example.com` 자리표시자입니다. 회사 PC에서는 실제 팀원 주소로 바꾸고
+> 아래 "회사 PC 실제 연동 방법"의 Outlook COM 발송으로 교체하세요.
+
 ## 회사 PC 실제 연동 방법
 
 ### 1. 입력 파일 교체

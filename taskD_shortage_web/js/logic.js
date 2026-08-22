@@ -10,11 +10,23 @@
     '품번', '품명', '필요수량', '확보수량', '결품수량', '확정구간', '라인'
   ];
 
-  // 데모용 업체 비밀번호 규칙: 업체코드 뒤 3자리 + "00" (예: V001 → 00100)
-  // 실제 운영 시에는 서버측 인증(Supabase Auth 등)으로 교체한다.
+  // ==================================================================
+  // ★★★ [데모 전용 인증 설정] — 실배포 전 반드시 교체할 것 ★★★
+  // 비밀번호가 업체코드에서 그대로 유도되고(뒤 3자리 + 접미사) 검증도
+  // 클라이언트(브라우저)에서만 이루어지므로 보안 기능이 전혀 없다.
+  // 실서비스에서는 이 블록을 삭제하고 서버측 인증(Supabase Auth 등의
+  // 업체 계정 또는 매일 발급되는 일회용 링크 토큰)으로 교체한다. (README 참조)
+  // ==================================================================
+  var DEMO_AUTH = {
+    passwordSuffix: '00', // 데모 규칙: 업체코드 뒤 3자리 + "00" (예: V001 → 00100)
+    passwordOf: function (vendorCode) {
+      var digits = String(vendorCode || '').replace(/\D/g, '');
+      return digits.slice(-3) + DEMO_AUTH.passwordSuffix;
+    }
+  };
+
   function vendorPassword(vendorCode) {
-    var digits = String(vendorCode || '').replace(/\D/g, '');
-    return digits.slice(-3) + '00';
+    return DEMO_AUTH.passwordOf(vendorCode);
   }
 
   function toNumber(value) {
