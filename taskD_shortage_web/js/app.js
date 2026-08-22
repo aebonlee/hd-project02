@@ -9,6 +9,7 @@
   var KEY_DATA = 'shortage.data.v1';        // { date, uploadedAt, rows: [...] }
   var KEY_RESP = 'shortage.responses.v1';   // { [rowId]: {status, reason, eta, respondedAt} }
   var KEY_LOG = 'shortage.notifylog.v1';    // [ { time, channel, to, message } ]
+  var KEY_SESSION = 'shortage.session.v1';  // 로그인한 업체코드 (sessionStorage — 탭 닫으면 만료)
 
   var store = {
     load: function (key, fallback) {
@@ -25,11 +26,24 @@
     }
   };
 
+  // 업체 로그인 세션 저장소 (새로고침에도 유지, 탭을 닫으면 만료)
+  var session = {
+    load: function () {
+      try { return sessionStorage.getItem(KEY_SESSION) || null; } catch (e) { return null; }
+    },
+    save: function (code) {
+      try { sessionStorage.setItem(KEY_SESSION, code); } catch (e) { /* 무시 */ }
+    },
+    clear: function () {
+      try { sessionStorage.removeItem(KEY_SESSION); } catch (e) { /* 무시 */ }
+    }
+  };
+
   var state = {
     data: store.load(KEY_DATA, null),
     responses: store.load(KEY_RESP, {}),
     log: store.load(KEY_LOG, []),
-    vendorSession: null // 로그인한 업체코드
+    vendorSession: session.load() // 로그인한 업체코드 (새로고침 시 복원)
   };
 
   // ---------- 유틸 ----------
@@ -156,7 +170,7 @@
   function handleFile(file) {
     if (!file) return;
     if (typeof XLSX === 'undefined') {
-      toast('엑셀 파서(SheetJS CDN) 로드 실패 — 인터넷 연결을 확인하거나 샘플 데이터를 사용하세요.', true);
+      toast('엑셀 파서(SheetJS) 로드 실패 — lib/xlsx.full.min.js 파일을 확인하거나 샘플 데이터를 사용하세요.', true);
       return;
     }
     var reader = new FileReader();
@@ -204,7 +218,7 @@
   function exportXlsx() {
     var issues = L.issueRows(state.data.rows, state.responses);
     if (issues.length === 0) { toast('내보낼 이슈 응답이 없습니다.', true); return; }
-    if (typeof XLSX === 'undefined') { toast('SheetJS CDN 로드 실패 — CSV 내보내기를 이용하세요.', true); return; }
+    if (typeof XLSX === 'undefined') { toast('엑셀 파서(SheetJS) 로드 실패 — CSV 내보내기를 이용하세요.', true); return; }
     var ws = XLSX.utils.json_to_sheet(issues);
     var wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, '이슈부품');
@@ -245,11 +259,13 @@
     var code = $('vendorSelect').value;
     var pw = $('vendorPw').value;
     if (!code) { toast('등록된 결품 현황이 없습니다. 담당자 모드에서 먼저 등록하세요.', true); return; }
+    // [데모 전용] 클라이언트측 비밀번호 검증 — 실서비스에서는 서버측 인증으로 교체 (logic.js DEMO_AUTH 참조)
     if (pw !== L.vendorPassword(code)) {
       toast('비밀번호가 올바르지 않습니다.', true);
       return;
     }
     state.vendorSession = code;
+    session.save(code);
     $('vendorPw').value = '';
     renderVendorPortal();
   }
@@ -405,6 +421,7 @@
     if (!confirm('등록된 현황·응답·알림 로그를 모두 삭제할까요?')) return;
     store.remove(KEY_DATA); store.remove(KEY_RESP); store.remove(KEY_LOG);
     state.data = null; state.responses = {}; state.log = []; state.vendorSession = null;
+    session.clear();
     $('uploadStatus').textContent = '';
     renderManager();
     renderVendorSelect();
@@ -427,10 +444,14 @@
   });
   $('btnVendorLogout').addEventListener('click', function () {
     state.vendorSession = null;
+    session.clear();
     renderVendorPortal();
   });
 
-  // 초기 렌더
+  // 초기 렌더 (업체 로그인 세션이 남아 있으면 업체 모드로 복원)
   renderManager();
   renderVendorSelect();
+  if (state.vendorSession) {
+    switchMode('vendor');
+  }
 })();

@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>협력업체 결품(D+4) 응답 시스템</title>
 <link rel="stylesheet" href="css/style.css">
-<!-- 엑셀 파싱: SheetJS (CDN). 오프라인 데모 시 "샘플 데이터 불러오기" 버튼은 CDN 없이도 동작 -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<!-- 엑셀 파싱: SheetJS (로컬 동봉 — 오프라인/사내망에서도 동작)
+     원본 CDN: https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js -->
+<script src="lib/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -113,7 +114,11 @@
         <input type="password" id="vendorPw" placeholder="비밀번호 입력" autocomplete="off">
       </div>
       <button class="btn btn-primary" id="btnVendorLogin" type="button" style="width:100%; justify-content:center;">로그인</button>
-      <p class="hint">실서비스에서는 서버측 인증(업체 계정 또는 일회용 링크 토큰)으로 교체됩니다.</p>
+      <p style="margin-top:12px; padding:10px 12px; border:1px solid #e0a800; border-radius:8px; background:#fff8e1; color:#7a5b00; font-size:13px; line-height:1.5;">
+        &#9888;&#65039; <b>데모 전용 인증입니다.</b> 비밀번호가 업체코드에서 자동 유도되고
+        브라우저에서만 검증되므로 보안 기능이 없습니다.
+        실배포 전 반드시 <b>서버측 인증(업체 계정 또는 일회용 링크 토큰)</b>으로 교체해야 합니다. (README 참조)
+      </p>
     </div>
 
     <div id="vendorPortal" hidden>

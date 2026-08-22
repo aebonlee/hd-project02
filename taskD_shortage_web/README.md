@@ -12,7 +12,7 @@
 # 방법 1: 브라우저에서 바로 열기
 open taskD_shortage_web/index.html        # (Windows: 파일 더블클릭)
 
-# 방법 2: 간이 웹서버 (권장 — CDN 로드/드래그 업로드가 더 안정적)
+# 방법 2: 간이 웹서버 (권장 — 드래그 업로드가 더 안정적)
 cd taskD_shortage_web
 python3 -m http.server 8000
 # 브라우저에서 http://localhost:8000 접속
@@ -31,6 +31,7 @@ python3 -m http.server 8000
 |---|---|
 | `index.html` | 단일 페이지 앱 (담당자 모드 + 업체 모드) |
 | `css/style.css` | 스타일 |
+| `lib/xlsx.full.min.js` | SheetJS 엑셀 파서 (로컬 동봉 — 오프라인/사내망 동작. 원본: https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js) |
 | `js/logic.js` | 순수 계산 로직 (파싱·상태 판정·마감 체크 — node 테스트 대상) |
 | `js/app.js` | 화면/이벤트/localStorage 제어 |
 | `js/sample_data.js` | 샘플 데이터 (엑셀과 동일 내용, 버튼 데모용) |
@@ -62,3 +63,13 @@ python3 taskD_shortage_web/sample_data/make_sample_excel.py   # 샘플 재생성
 
 보안 수준: 사외 협력업체 접속을 전제로 하며, 업체 코드+비밀번호(또는 일회용 링크 토큰) 수준의
 중간 보안을 가정합니다(기획서 5번 가정). 실배포 시 HTTPS 필수, 응답 API는 서버측 검증 필요.
+
+> **⚠️ 데모 전용 인증 경고**
+> 현재 업체 비밀번호는 업체코드에서 자동 유도되는 규칙(뒤 3자리+`00`)이며
+> 검증도 브라우저(클라이언트)에서만 이루어지므로 **보안 기능이 전혀 없습니다.**
+> 규칙과 코드가 모두 공개되어 있어 누구나 임의 업체로 로그인할 수 있습니다.
+> 실배포 전에 반드시 `js/logic.js`의 `DEMO_AUTH` 블록을 제거하고
+> **서버측 인증(Supabase Auth 등의 업체 계정) 또는 매일 발급되는 일회용 링크 토큰**으로 교체해야 합니다.
+
+로그인 세션: 업체 로그인 상태는 `sessionStorage`에 보관되어 **새로고침해도 유지**되며,
+탭/브라우저를 닫거나 [로그아웃]·[데이터 초기화] 시 만료됩니다.

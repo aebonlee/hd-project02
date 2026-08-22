@@ -12,7 +12,11 @@
 python3 taskA_pdf_extract/make_samples.py   # 레이아웃이 다른 샘플 PDF 3종 생성
 python3 taskA_pdf_extract/extract.py        # sample_pdfs/ 전체 추출 → output/추출결과.xlsx
 python3 taskA_pdf_extract/extract.py 특정파일.pdf   # 특정 파일만 처리
+python3 taskA_pdf_extract/test_extract.py           # 추출 규칙/오류 처리 테스트
 ```
+
+손상된 PDF 등 개별 파일에서 오류가 나도 배치는 중단되지 않고,
+해당 행이 `검토필요 Y (처리오류: ...)` 로 표시된 뒤 다음 파일을 계속 처리한다.
 
 ## 샘플 PDF 3종 (레이아웃 상이)
 

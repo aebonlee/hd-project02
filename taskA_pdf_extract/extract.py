@@ -21,10 +21,8 @@ import os
 import re
 import sys
 
-import pdfplumber
-from openpyxl import Workbook
-from openpyxl.styles import Alignment, Font, PatternFill
-from openpyxl.utils import get_column_letter
+# pdfplumber / openpyxl 은 실제로 필요한 함수 안에서 import 한다.
+# (테스트 환경 등 라이브러리가 없는 곳에서도 순수 로직 함수를 import 할 수 있도록)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, "vendors.json")
@@ -41,6 +39,8 @@ def load_config():
 
 def read_pdf_text(path):
     """PDF 전체 페이지의 텍스트를 하나의 문자열로 합친다."""
+    import pdfplumber
+
     chunks = []
     with pdfplumber.open(path) as pdf:
         for page in pdf.pages:
@@ -105,6 +105,10 @@ def extract_from_pdf(path, config):
 
 
 def save_excel(rows, out_path):
+    from openpyxl import Workbook
+    from openpyxl.styles import Alignment, Font, PatternFill
+    from openpyxl.utils import get_column_letter
+
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     wb = Workbook()
     ws = wb.active
@@ -134,6 +138,28 @@ def save_excel(rows, out_path):
     wb.save(out_path)
 
 
+def process_pdfs(pdf_paths, config):
+    """PDF 목록을 순회 처리한다. 개별 파일 오류(손상 PDF 등)는 배치 전체를
+    중단시키지 않고, 해당 행을 '검토필요'로 표시한 뒤 계속 진행한다."""
+    rows = []
+    for path in pdf_paths:
+        try:
+            row = extract_from_pdf(path, config)
+        except Exception as exc:  # 손상/암호화 PDF, 읽기 실패 등
+            row = {col: "" for col in COLUMNS}
+            row["파일명"] = os.path.basename(path)
+            row["검토필요"] = f"Y (처리오류: {type(exc).__name__})"
+            print(f"[오류] {row['파일명']} 처리 실패 → 검토필요로 표시하고 계속: {exc}")
+            rows.append(row)
+            continue
+        rows.append(row)
+        status = "OK" if row["검토필요"] == "N" else row["검토필요"]
+        print(f"[추출] {row['파일명']} → 업체={row['업체명'] or '?'} "
+              f"품번={row['품번']} 무게={row['무게']}kg 수량={row['수량']} "
+              f"금액=USD {row['금액']} 인코텀즈={row['인코텀즈']} / {status}")
+    return rows
+
+
 def main():
     config = load_config()
 
@@ -149,15 +175,7 @@ def main():
         print("처리할 PDF가 없습니다. 먼저 make_samples.py 를 실행하세요.")
         sys.exit(1)
 
-    rows = []
-    for path in pdf_paths:
-        row = extract_from_pdf(path, config)
-        rows.append(row)
-        status = "OK" if row["검토필요"] == "N" else row["검토필요"]
-        print(f"[추출] {row['파일명']} → 업체={row['업체명'] or '?'} "
-              f"품번={row['품번']} 무게={row['무게']}kg 수량={row['수량']} "
-              f"금액=USD {row['금액']} 인코텀즈={row['인코텀즈']} / {status}")
-
+    rows = process_pdfs(pdf_paths, config)
     save_excel(rows, OUT_PATH)
     print(f"\n[저장] {OUT_PATH} ({len(rows)}건)")
 

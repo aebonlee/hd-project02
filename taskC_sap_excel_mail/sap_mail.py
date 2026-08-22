@@ -21,8 +21,8 @@ from datetime import date
 from email.message import EmailMessage
 from email.utils import formatdate
 
-from openpyxl import load_workbook
-from openpyxl.utils import range_boundaries
+# openpyxl 은 실제로 필요한 함수 안에서 import 한다.
+# (라이브러리가 없는 환경에서도 순수 로직 함수를 import 할 수 있도록)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_XLSX = os.path.join(BASE_DIR, "sample_data", "자재수급현황_가공완료.xlsx")
@@ -54,6 +54,8 @@ def range_to_html(ws, cell_range):
     [대체 구현 메모] 기획서의 '특정 범위 이미지 캡처'는 엑셀 설치가 필요한
     xlwings COM 기능이라 개인 환경에서는 HTML 표로 대체한다. (README 참조)
     """
+    from openpyxl.utils import range_boundaries
+
     min_col, min_row, max_col, max_row = range_boundaries(cell_range)
     merged = {}
     skip = set()
@@ -116,6 +118,8 @@ def build_mail_html(table_html, today_str):
 
 
 def main():
+    from openpyxl import load_workbook
+
     if not os.path.exists(SRC_XLSX):
         raise SystemExit("샘플 엑셀이 없습니다. 먼저 make_sample.py 를 실행하세요.")
     os.makedirs(OUT_DIR, exist_ok=True)
