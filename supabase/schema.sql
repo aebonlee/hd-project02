@@ -266,3 +266,49 @@ grant execute on function public.set_response_vendor() to authenticated;
 --   ① Supabase Auth 에 사용자 생성 (업체코드 기반 가상 이메일 가능)
 --   ② update public.vendor set auth_user_id = '<uuid>' where code = '<업체코드>';
 -- ----------------------------------------------------------------------------
+
+-- ===============================================================
+-- 6. 화면이 실제로 쓰는 열 보강 (2026-08-25)
+--    앱의 엑셀 양식에는 있는데 스키마에 빠져 있던 것들.
+--    나중에 덧붙인 절이라 add column if not exists 로 쓴다.
+-- ===============================================================
+
+alter table shortage add column if not exists line         text;   -- '2라인'
+alter table shortage add column if not exists confirm_span text;   -- 'D+3' 확정구간
+alter table vendor   add column if not exists password_hint text;  -- 초기 비밀번호 안내용(선택)
+
+-- 업체 담당자에게 바로 연락할 수 있어야 실무에서 쓰인다
+comment on column vendor.manager is '담당자명';
+comment on column vendor.phone   is '담당자 연락처';
+
+-- 화면이 한 번에 읽는 모양 그대로 뷰로 낸다.
+-- 앱이 여러 표를 조인하지 않아도 되도록 여기서 미리 붙여 둔다.
+create or replace view shortage_board as
+select
+  s.id,
+  b.base_date,
+  b.due_date        as batch_due_date,
+  s.vendor_code,
+  v.name            as vendor_name,
+  v.manager,
+  v.phone,
+  s.part_no,
+  s.part_name,
+  s.required_qty,
+  s.stock_qty,
+  s.shortage_qty,
+  s.confirm_span,
+  s.line,
+  r.has_issue,
+  r.reason,
+  r.eta_date,
+  r.responded_at,
+  case
+    when r.id is null then '미응답'
+    when r.has_issue  then '있음'
+    else                   '없음'
+  end               as response_status
+from shortage s
+join batch  b on b.id = s.batch_id
+join vendor v on v.code = s.vendor_code
+left join response r on r.shortage_id = s.id;

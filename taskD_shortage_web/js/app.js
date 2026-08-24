@@ -46,6 +46,26 @@
     vendorSession: session.load() // 로그인한 업체코드 (새로고침 시 복원)
   };
 
+  // ---------- 저장 위치 ----------
+  // 서버(Supabase)에 연결되면 여러 업체·담당자가 같은 자료를 본다.
+  // 연결 안 되면 지금까지처럼 이 브라우저에만 저장한다(데모).
+  // 화면 코드는 아래 세 함수만 부르면 되고, 어디에 저장되는지 몰라도 된다.
+  var SB = null;   // 서버 모드일 때만 채워진다
+
+  function persistBatch() {
+    store.save(KEY_DATA, state.data);
+    store.save(KEY_RESP, state.responses);
+    if (SB) HD.guard(SB.saveBatch(state.data), '결품 현황 등록');
+  }
+  function persistResponse(rowId) {
+    store.save(KEY_RESP, state.responses);
+    if (SB) HD.guard(SB.saveResponse(rowId, state.responses[rowId]), '응답 저장');
+  }
+  function persistLog(entry) {
+    store.save(KEY_LOG, state.log);
+    if (SB && entry) HD.guard(SB.saveLog(entry), '알림 로그');
+  }
+
   // ---------- 유틸 ----------
   function $(id) { return document.getElementById(id); }
   function esc(s) {
@@ -82,7 +102,7 @@
       message: message
     };
     state.log.push(entry);
-    store.save(KEY_LOG, state.log);
+    persistLog(entry);
     return entry;
   }
 
@@ -159,9 +179,9 @@
       rows: rows
     };
     state.responses = {}; // 새 현황 등록 시 응답 초기화
-    store.save(KEY_DATA, state.data);
-    store.save(KEY_RESP, state.responses);
-    toast(sourceLabel + ' — ' + rows.length + '건 등록 완료');
+    persistBatch();
+    toast(sourceLabel + ' — ' + rows.length + '건 등록 완료'
+      + (SB ? ' (업체 화면에도 바로 보입니다)' : ''));
     $('uploadStatus').textContent = sourceLabel + ' (' + rows.length + '건, ' + state.data.uploadedAt + ')';
     renderManager();
     renderVendorSelect();
@@ -341,7 +361,7 @@
       eta: status === '있음' ? eta : '',
       respondedAt: nowStr()
     };
-    store.save(KEY_RESP, state.responses);
+    persistResponse(rowId);
     return true;
   }
 
@@ -420,6 +440,7 @@
   $('btnClearAll').addEventListener('click', function () {
     if (!confirm('등록된 현황·응답·알림 로그를 모두 삭제할까요?')) return;
     store.remove(KEY_DATA); store.remove(KEY_RESP); store.remove(KEY_LOG);
+    if (SB) HD.guard(SB.clearAll(), '서버 자료 삭제');
     state.data = null; state.responses = {}; state.log = []; state.vendorSession = null;
     session.clear();
     $('uploadStatus').textContent = '';
@@ -434,7 +455,7 @@
   $('btnDeadline').addEventListener('click', runDeadline);
   $('btnClearLog').addEventListener('click', function () {
     state.log = [];
-    store.save(KEY_LOG, state.log);
+    persistLog(null);
     renderLog();
   });
 
@@ -448,10 +469,38 @@
     renderVendorPortal();
   });
 
-  // 초기 렌더 (업체 로그인 세션이 남아 있으면 업체 모드로 복원)
-  renderManager();
-  renderVendorSelect();
-  if (state.vendorSession) {
-    switchMode('vendor');
+  // ---------- 시작 ----------
+  function paint() {
+    renderManager();
+    renderVendorSelect();
+    renderLog();
+    if (state.vendorSession) switchMode('vendor');
+  }
+
+  // 저장 실패를 토스트로 보여 준다. 조용히 넘어가면 사용자는 저장된 줄 안다.
+  if (root_HD()) HD.onNotify(function (msg, isError) { toast(msg, isError); });
+
+  function root_HD() { return typeof HD !== 'undefined' && HD; }
+
+  if (root_HD() && HD.available() && window.ShortageSupabase) {
+    HD.boot({
+      tables: window.ShortageSupabase.tables,
+      onReady: function (fetched) {
+        var m = window.ShortageSupabase.hydrate(fetched);
+        SB = window.ShortageSupabase;
+        state.data = m.data;
+        state.responses = m.responses;
+        state.log = m.log;
+        paint();
+      },
+      onFallback: function () {
+        // 연결 실패 — 이 브라우저에 있던 것으로 계속 쓴다. 배너에 이유가 뜬다.
+        SB = null;
+        paint();
+      }
+    });
+  } else {
+    if (root_HD()) HD.banner('demo');
+    paint();
   }
 })();
