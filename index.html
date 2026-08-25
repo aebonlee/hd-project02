@@ -68,6 +68,10 @@
   .cards .card{margin-bottom:0;}
   /* 격자 안에서는 gap 이 간격을 준다 — 형제 여백을 쓰면 첫 칸만 커진다 */
   .cards > .card + .card{margin-top:0;}
+  /* 설명 길이가 달라도 **버튼 줄은 같은 높이에** 서게 한다.
+     칸 높이는 격자가 맞춰 주지만 버튼은 글 바로 뒤를 따라가 제각각이 된다. */
+  .cards .card{display:flex; flex-direction:column;}
+  .cards .card .btnrow{margin-top:auto; padding-top:14px;}
 
   /* label 은 기본이 inline 이다 — block 으로 두지 않으면 안쪽 글자가 제멋대로 흐른다 */
   .drop{display:block; border:2px dashed #b9c6d6; border-radius:12px; background:#fbfdff;
