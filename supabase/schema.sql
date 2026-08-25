@@ -133,7 +133,13 @@ create trigger response_set_vendor
 -- 3. 뷰 — 응답 현황
 -- ----------------------------------------------------------------------------
 
-create or replace view public.status as
+
+-- ⚠ 뷰에는 `with (security_invoker = true)` 를 붙인다.
+--   붙이지 않으면 뷰는 **만든 사람(postgres)의 권한**으로 돌아, 뷰를 읽을 수 있는
+--   사람이 밑에 깔린 표의 RLS 를 통째로 지나친다. 표만 잠그고 뷰를 안 잠그면 헛일이다.
+--   (hd-project03 에서 실제로 남의 업체 실사 결과가 뷰로 그대로 보였다)
+--   security_invoker 는 PostgreSQL 15 부터. Supabase 는 15 이상이다.
+create or replace view public.status with (security_invoker = true) as
 select
   b.id            as batch_id,
   b.base_date,
@@ -159,7 +165,7 @@ join public.batch  b on b.id = s.batch_id
 join public.vendor v on v.code = s.vendor_code
 left join public.response r on r.shortage_id = s.id;
 
-create or replace view public.vendor_summary as
+create or replace view public.vendor_summary with (security_invoker = true) as
 select batch_id, base_date, vendor_code, vendor_name,
        count(*)                                              as total,
        count(*) filter (where response_status = '미응답')      as pending,
@@ -283,7 +289,7 @@ comment on column vendor.phone   is '담당자 연락처';
 
 -- 화면이 한 번에 읽는 모양 그대로 뷰로 낸다.
 -- 앱이 여러 표를 조인하지 않아도 되도록 여기서 미리 붙여 둔다.
-create or replace view shortage_board as
+create or replace view shortage_board with (security_invoker = true) as
 select
   s.id,
   b.base_date,
