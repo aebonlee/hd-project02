@@ -2,6 +2,10 @@
 
 > 🌐 **배포 페이지: [https://aebonlee.github.io/hd-project02/](https://aebonlee.github.io/hd-project02/)** · 저장소: https://github.com/aebonlee/hd-project02
 
+> 🗄️ **Supabase 를 붙이려면 → [`SUPABASE-설정.md`](SUPABASE-설정.md)**
+> 데이터베이스는 **수강생 본인 계정**에 만듭니다. 계정 만들기부터 확인까지 단계별로 적어 두었습니다.
+
+
 생성형 AI 업무자동화 전문가과정 [1차수] 프로젝트 — 기획자: 권도연
 
 "SAP/MES 자료 다운 → 엑셀 가공 → Outlook 메일 송부"로 반복되는 일일 업무를 자동화하고,
