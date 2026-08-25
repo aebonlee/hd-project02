@@ -57,26 +57,51 @@ HOME = '''
 <div class="cards">
   <div class="card">
     <h3>A. 업체별 PDF → 엑셀</h3>
-    <p class="sub">업체마다 양식이 다른 PDF 에서 품번·무게·수량·금액·인코텀즈를 뽑아
-      한 장의 엑셀로 모읍니다. 못 뽑은 항목은 <b>검토필요</b> 로 표시합니다.</p>
+    <p class="sub">업체마다 양식이 다른 PDF 에서 <b>품번·무게·수량·금액·인코텀즈</b> 를 뽑아
+      한 장의 엑셀로 모읍니다. 공통 4개 항목은 같은 정규식으로, <b>인코텀즈만 업체별 패턴</b>으로
+      나눠 찾습니다. 못 뽑은 항목은 빈칸으로 두고 <b>검토필요</b> 로 표시합니다 —
+      추측해서 채우지 않습니다.</p>
+    <div class="io">
+      <span class="tag">PDF 여러 장</span><span class="arrow">→</span>
+      <span><b>추출결과.xlsx</b></span>
+    </div>
     <div class="btnrow"><a class="btn primary" href="task-a.html">열기</a></div>
   </div>
+
   <div class="card">
     <h3>B. MES 진행현황 아침 메일</h3>
-    <p class="sub">라인별로 07:00 기준 <b>투입 계획 대비 시작</b> 수량을 비교해
-      앞당김·지연을 판정하고 메일 본문을 만듭니다.</p>
+    <p class="sub">라인별로 <b>07:00 기준</b> 투입 계획 대비 시작 수량을 비교해
+      앞당김·지연을 판정하고 메일 본문을 만듭니다. 아직 시작하지 않은 지시는
+      <b>미시작</b> 으로 따로 셉니다 — 0으로 치면 지연이 눈에 안 띕니다.</p>
+    <div class="io">
+      <span class="tag">MES 현황 CSV</span><span class="arrow">→</span>
+      <span><b>메일(.eml)</b> · 미리보기</span>
+    </div>
     <div class="btnrow"><a class="btn primary" href="task-b.html">열기</a></div>
   </div>
+
   <div class="card">
     <h3>C. SAP 엑셀 가공 → 메일</h3>
     <p class="sub">가공한 엑셀의 표를 <b>서식 그대로</b> 메일 본문에 넣고,
-      원본 파일을 첨부한 메일을 만듭니다.</p>
+      원본 파일을 첨부한 메일을 만듭니다. 캡처해 붙이면 그림이 되어 글자를 복사할 수 없고
+      휴대폰에서 뭉개집니다 — 그래서 <b>표를 HTML 로 옮깁니다.</b></p>
+    <div class="io">
+      <span class="tag">가공 엑셀(.xlsx)</span><span class="arrow">→</span>
+      <span><b>메일(.eml)</b> · 원본 첨부</span>
+    </div>
     <div class="btnrow"><a class="btn primary" href="task-c.html">열기</a></div>
   </div>
+
   <div class="card">
     <h3>D. 협력업체 결품 응답</h3>
     <p class="sub">매일 엑셀로 보내던 D+4 결품 현황을,
-      <b>업체가 직접 접속해 특이사항 유/무를 응답</b>하는 웹으로 바꿉니다.</p>
+      <b>업체가 직접 접속해 특이사항 유/무를 응답</b>하는 웹으로 바꿉니다.
+      담당자가 엑셀을 올리면 업체별로 나뉘고, 응답은 담당자 화면에 바로 나타납니다.
+      <b>업체는 자기 것만 봅니다.</b></p>
+    <div class="io">
+      <span class="tag">결품 엑셀 업로드</span><span class="arrow">→</span>
+      <span><b>업체 응답</b> · 현황 집계</span>
+    </div>
     <div class="btnrow"><a class="btn primary" href="taskD_shortage_web/index.html">열기</a></div>
   </div>
 </div>
