@@ -116,8 +116,8 @@
   .filelist li{padding:6px 0; border-bottom:1px solid var(--line); color:var(--sub);}
   .filelist li:last-child{border-bottom:0;}
 </style>
-<title>반복 업무 자동화 4종 — SAP·MES 자료 가공과 메일 자동화</title>
-<meta name="description" content="업체별 PDF 추출, MES 아침 메일, SAP 엑셀 가공 메일, 협력업체 결품 응답 웹 — 파일을 올리면 브라우저에서 바로 처리합니다.">
+<title>B. MES 진행현황 아침 메일 — 반복 업무 자동화 4종</title>
+<meta name="description" content="MES 현황 CSV 를 올리면 라인별 앞당김·지연을 판정해 아침 보고 메일 본문을 만듭니다.">
 </head>
 <body>
 
@@ -125,62 +125,52 @@
   <div class="topnav-inner">
     <a class="topnav-brand" href="index.html">반복 업무 자동화 <small>4종 · 기획 권도연</small></a>
     <ul class="topnav-links">
-      <li><a href="index.html" class="active" aria-current="page">개요</a></li>
+      <li><a href="index.html">개요</a></li>
       <li><a href="task-a.html">A. PDF 추출</a></li>
-      <li><a href="task-b.html">B. MES 아침메일</a></li>
+      <li><a href="task-b.html" class="active" aria-current="page">B. MES 아침메일</a></li>
       <li><a href="task-c.html">C. SAP 가공메일</a></li>
       <li><a href="taskD_shortage_web/index.html">D. 결품 응답</a></li>
     </ul>
   </div>
 </nav>
 
-<header class="hero"><div class="wrap"><div class="eyebrow">생성형 AI 업무자동화 전문가과정 · 1차수</div><h1>반복 업무 자동화 4종</h1><p>"SAP/MES 자료 다운 → 엑셀 가공 → Outlook 메일 송부"로 반복되던 일을 자동화합니다. 파일을 올리면 브라우저에서 바로 처리하고, 결과를 엑셀·메일로 내려받습니다.</p></div></header>
+<header class="hero"><div class="wrap"><div class="eyebrow">과제 B</div><h1>MES 라인별 진행현황 아침 메일</h1><p>07:00 기준으로 투입 계획 대비 시작 수량을 비교해 라인별 앞당김·지연을 판정하고, 그대로 보낼 수 있는 메일 본문을 만듭니다.</p></div></header>
 
 <main><div class="wrap">
 
-<h2>네 가지 과제</h2>
-<p class="sub">SAP·MES 자료를 내려받아 엑셀로 가공하고 메일로 보내던 일을 자동화합니다.
-  A·B·C 는 <b>파일을 올리면 브라우저에서 바로 처리</b>하고, D 는 협력업체가 직접 접속해 응답하는 웹입니다.</p>
-
-<div class="cards">
-  <div class="card">
-    <h3>A. 업체별 PDF → 엑셀</h3>
-    <p class="sub">업체마다 양식이 다른 PDF 에서 품번·무게·수량·금액·인코텀즈를 뽑아
-      한 장의 엑셀로 모읍니다. 못 뽑은 항목은 <b>검토필요</b> 로 표시합니다.</p>
-    <div class="btnrow"><a class="btn primary" href="task-a.html">열기</a></div>
-  </div>
-  <div class="card">
-    <h3>B. MES 진행현황 아침 메일</h3>
-    <p class="sub">라인별로 07:00 기준 <b>투입 계획 대비 시작</b> 수량을 비교해
-      앞당김·지연을 판정하고 메일 본문을 만듭니다.</p>
-    <div class="btnrow"><a class="btn primary" href="task-b.html">열기</a></div>
-  </div>
-  <div class="card">
-    <h3>C. SAP 엑셀 가공 → 메일</h3>
-    <p class="sub">가공한 엑셀의 표를 <b>서식 그대로</b> 메일 본문에 넣고,
-      원본 파일을 첨부한 메일을 만듭니다.</p>
-    <div class="btnrow"><a class="btn primary" href="task-c.html">열기</a></div>
-  </div>
-  <div class="card">
-    <h3>D. 협력업체 결품 응답</h3>
-    <p class="sub">매일 엑셀로 보내던 D+4 결품 현황을,
-      <b>업체가 직접 접속해 특이사항 유/무를 응답</b>하는 웹으로 바꿉니다.</p>
-    <div class="btnrow"><a class="btn primary" href="taskD_shortage_web/index.html">열기</a></div>
+<div class="card">
+  <h3>1. MES 현황 CSV 를 올리세요</h3>
+  <p class="sub">필요한 열: <code>라인, 작업지시번호, 품번, 투입계획일시, 시작일시, 계획수량, 실적수량</code></p>
+  <label class="drop" id="drop">
+    <input type="file" id="file" accept=".csv,text/csv">
+    <b>CSV 를 끌어다 놓거나 눌러서 고르세요</b>
+    <span>MES 에서 내려받은 그대로</span>
+  </label>
+  <ul class="filelist" id="files"></ul>
+  <div class="btnrow">
+    <button class="btn primary" id="run" disabled>분석하고 메일 만들기</button>
+    <button class="btn" id="sample">예제 CSV 로 해보기</button>
   </div>
 </div>
 
-<h2>파이썬으로도 돌릴 수 있습니다</h2>
-<p class="sub">A·B·C 는 저장소에 파이썬 스크립트가 함께 들어 있습니다.
-  사내에서 일괄 처리하거나 스케줄러에 걸 때는 그쪽을 씁니다.
-  <b>판정 규칙은 같습니다</b> — 웹은 같은 규칙을 브라우저에서 돌린 것입니다.</p>
+<div id="out"></div>
+
+<h2>판정 기준</h2>
+<ol class="steps">
+  <li>기준 시각은 <b>그날 07:00</b> 입니다.</li>
+  <li><b>계획기준수량</b> = 투입계획일시가 07:00 이전인 지시의 계획수량 합</li>
+  <li><b>시작기준수량</b> = 시작일시가 07:00 이전인 지시의 계획수량 합</li>
+  <li>차이 = 시작기준 − 계획기준 →
+      <b>양수면 앞당김</b>(빨강), <b>음수면 지연</b>, 0이면 정상</li>
+</ol>
 <div class="note">
-  브라우저에서 처리하므로 <b>파일이 서버로 올라가지 않습니다.</b>
-  사내 자료를 다룰 때 이 점이 중요합니다 — 이 페이지는 네트워크로 아무것도 보내지 않습니다.
+  아직 시작하지 않은 지시는 <b>미시작</b> 으로 따로 셉니다.
+  시작일시가 비어 있는 것을 0으로 치면 지연이 눈에 안 띕니다.
 </div>
 
 </div></main>
 
 <footer><div class="wrap">반복 업무 자동화 4종 · 생성형 AI 업무자동화 전문가과정 1차수 — 기획: 권도연</div></footer>
-
+<script src="js/task-b.js"></script>
 </body>
 </html>

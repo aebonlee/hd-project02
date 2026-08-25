@@ -116,8 +116,8 @@
   .filelist li{padding:6px 0; border-bottom:1px solid var(--line); color:var(--sub);}
   .filelist li:last-child{border-bottom:0;}
 </style>
-<title>반복 업무 자동화 4종 — SAP·MES 자료 가공과 메일 자동화</title>
-<meta name="description" content="업체별 PDF 추출, MES 아침 메일, SAP 엑셀 가공 메일, 협력업체 결품 응답 웹 — 파일을 올리면 브라우저에서 바로 처리합니다.">
+<title>A. 업체별 PDF 데이터 추출 — 반복 업무 자동화 4종</title>
+<meta name="description" content="양식이 다른 업체별 PDF 에서 품번·무게·수량·금액·인코텀즈를 뽑아 엑셀 한 장으로 모읍니다.">
 </head>
 <body>
 
@@ -125,8 +125,8 @@
   <div class="topnav-inner">
     <a class="topnav-brand" href="index.html">반복 업무 자동화 <small>4종 · 기획 권도연</small></a>
     <ul class="topnav-links">
-      <li><a href="index.html" class="active" aria-current="page">개요</a></li>
-      <li><a href="task-a.html">A. PDF 추출</a></li>
+      <li><a href="index.html">개요</a></li>
+      <li><a href="task-a.html" class="active" aria-current="page">A. PDF 추출</a></li>
       <li><a href="task-b.html">B. MES 아침메일</a></li>
       <li><a href="task-c.html">C. SAP 가공메일</a></li>
       <li><a href="taskD_shortage_web/index.html">D. 결품 응답</a></li>
@@ -134,53 +134,47 @@
   </div>
 </nav>
 
-<header class="hero"><div class="wrap"><div class="eyebrow">생성형 AI 업무자동화 전문가과정 · 1차수</div><h1>반복 업무 자동화 4종</h1><p>"SAP/MES 자료 다운 → 엑셀 가공 → Outlook 메일 송부"로 반복되던 일을 자동화합니다. 파일을 올리면 브라우저에서 바로 처리하고, 결과를 엑셀·메일로 내려받습니다.</p></div></header>
+<header class="hero"><div class="wrap"><div class="eyebrow">과제 A</div><h1>업체별 PDF 데이터 추출 → 엑셀</h1><p>업체마다 양식이 다른 PDF 를 올리면 필요한 항목만 뽑아 한 장의 엑셀로 모읍니다. 못 뽑은 항목은 빈칸으로 두고 검토필요로 표시합니다.</p></div></header>
 
 <main><div class="wrap">
 
-<h2>네 가지 과제</h2>
-<p class="sub">SAP·MES 자료를 내려받아 엑셀로 가공하고 메일로 보내던 일을 자동화합니다.
-  A·B·C 는 <b>파일을 올리면 브라우저에서 바로 처리</b>하고, D 는 협력업체가 직접 접속해 응답하는 웹입니다.</p>
-
-<div class="cards">
-  <div class="card">
-    <h3>A. 업체별 PDF → 엑셀</h3>
-    <p class="sub">업체마다 양식이 다른 PDF 에서 품번·무게·수량·금액·인코텀즈를 뽑아
-      한 장의 엑셀로 모읍니다. 못 뽑은 항목은 <b>검토필요</b> 로 표시합니다.</p>
-    <div class="btnrow"><a class="btn primary" href="task-a.html">열기</a></div>
-  </div>
-  <div class="card">
-    <h3>B. MES 진행현황 아침 메일</h3>
-    <p class="sub">라인별로 07:00 기준 <b>투입 계획 대비 시작</b> 수량을 비교해
-      앞당김·지연을 판정하고 메일 본문을 만듭니다.</p>
-    <div class="btnrow"><a class="btn primary" href="task-b.html">열기</a></div>
-  </div>
-  <div class="card">
-    <h3>C. SAP 엑셀 가공 → 메일</h3>
-    <p class="sub">가공한 엑셀의 표를 <b>서식 그대로</b> 메일 본문에 넣고,
-      원본 파일을 첨부한 메일을 만듭니다.</p>
-    <div class="btnrow"><a class="btn primary" href="task-c.html">열기</a></div>
-  </div>
-  <div class="card">
-    <h3>D. 협력업체 결품 응답</h3>
-    <p class="sub">매일 엑셀로 보내던 D+4 결품 현황을,
-      <b>업체가 직접 접속해 특이사항 유/무를 응답</b>하는 웹으로 바꿉니다.</p>
-    <div class="btnrow"><a class="btn primary" href="taskD_shortage_web/index.html">열기</a></div>
+<div class="card">
+  <h3>1. PDF 를 올리세요</h3>
+  <p class="sub">여러 장을 한 번에 올릴 수 있습니다. 업체는 파일 안의 키워드로 자동 판별합니다.</p>
+  <label class="drop" id="drop">
+    <input type="file" id="file" accept="application/pdf" multiple>
+    <b>PDF 를 끌어다 놓거나 눌러서 고르세요</b>
+    <span>업체별 양식이 달라도 됩니다 · 여러 개 동시 선택 가능</span>
+  </label>
+  <ul class="filelist" id="files"></ul>
+  <div class="btnrow">
+    <button class="btn primary" id="run" disabled>추출하기</button>
+    <button class="btn" id="sample">예제 PDF 로 해보기</button>
   </div>
 </div>
 
-<h2>파이썬으로도 돌릴 수 있습니다</h2>
-<p class="sub">A·B·C 는 저장소에 파이썬 스크립트가 함께 들어 있습니다.
-  사내에서 일괄 처리하거나 스케줄러에 걸 때는 그쪽을 씁니다.
-  <b>판정 규칙은 같습니다</b> — 웹은 같은 규칙을 브라우저에서 돌린 것입니다.</p>
+<div id="out"></div>
+
+<h2>어떻게 뽑나</h2>
+<ol class="steps">
+  <li>PDF 에서 <b>텍스트를 통째로</b> 꺼냅니다.</li>
+  <li><code>vendors.json</code> 의 키워드로 <b>어느 업체 양식인지</b> 판별합니다.</li>
+  <li>공통 4개 항목(품번·무게·수량·금액)은 공통 정규식으로,
+      <b>인코텀즈만 업체별 패턴</b>으로 나눠 찾습니다.</li>
+  <li>공통 정규식이 실패하면 <b>값 형식만으로</b> 한 번 더 시도합니다(fallback).</li>
+  <li>그래도 못 찾은 항목은 빈칸으로 두고 <b>검토필요</b> 로 표시합니다 —
+      <b>추측해서 채우지 않습니다.</b> 틀린 값이 조용히 들어가는 것이 빈칸보다 나쁩니다.</li>
+</ol>
 <div class="note">
-  브라우저에서 처리하므로 <b>파일이 서버로 올라가지 않습니다.</b>
-  사내 자료를 다룰 때 이 점이 중요합니다 — 이 페이지는 네트워크로 아무것도 보내지 않습니다.
+  새 업체가 늘면 <code>taskA_pdf_extract/vendors.json</code> 에 키워드와 인코텀즈 패턴만 추가하면 됩니다.
+  코드는 고치지 않습니다.
 </div>
 
 </div></main>
 
 <footer><div class="wrap">반복 업무 자동화 4종 · 생성형 AI 업무자동화 전문가과정 1차수 — 기획: 권도연</div></footer>
-
+<script src="lib/xlsx.full.min.js"></script>
+<script src="js/vendor-rules.js"></script>
+<script type="module" src="js/task-a.js"></script>
 </body>
 </html>
